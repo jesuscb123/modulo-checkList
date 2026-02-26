@@ -72,3 +72,14 @@ class PracticeChecklistItemService(BaseService):
         self.repo.session.commit()
         self.repo.session.refresh(item)
         return serialize(item)
+    
+
+    @exposed_action("write", groups = ["practice_checklist_group_manager", "core_group_superadmin"])
+    def set_done_bulk(self, ids: list[int], done: bool = True):
+        for id in ids:
+            self.set_done(id = id, done = done)
+
+        return "ok"
+
+
+

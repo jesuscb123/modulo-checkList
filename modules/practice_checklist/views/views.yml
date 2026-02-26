@@ -112,6 +112,20 @@
               label: Hecho
               type: boolean
               default: false
+      bulk_actions:
+        - key: bulk_set_done
+          label: "Completar seleccionados"
+          icon: mdi-check-all
+          method: set_done_bulk
+          model_key: practice_checklist.checklist_item
+          groups: [practice_checklist_group_manager, core_group_superadmin]
+          confirm: "Los elementos seleccionados se van a marcar como hechos. ¿Estás seguro?"
+          params:
+            - name: done
+              hidden: true
+              default: true
+        
+
 
 - model: ui.view
   ext_id: practice_checklist_view_item_form
