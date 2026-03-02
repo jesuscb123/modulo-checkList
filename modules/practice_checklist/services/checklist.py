@@ -63,8 +63,12 @@ class PracticeChecklistItemService(BaseService):
         item = self.repo.session.get(PracticeChecklistItem, int(id))
         if item is None:
             raise HTTPException(404, "Checklist item not found")
-        item.is_done = bool(done)
-        item.done_at = dt.datetime.now(dt.timezone.utc) if done else None
+        
+        if item.is_done:
+            raise HTTPException(400, "Este ítem ya está marcado como hecho y no se puede cambiar")
+        
+        item.is_done = True
+        item.done_at = dt.datetime.now(dt.timezone.utc)
         if note:
             base = (item.note or "").strip()
             item.note = f"{base}\n\n[Estado] {note}".strip()
@@ -75,11 +79,19 @@ class PracticeChecklistItemService(BaseService):
     
 
     @exposed_action("write", groups = ["practice_checklist_group_manager", "core_group_superadmin"])
-    def set_done_bulk(self, ids: list[int], done: bool = True):
-        for id in ids:
-            self.set_done(id = id, done = done)
+    def set_done_bulk(self, id: list[int], done: bool = True):
+        for item_id in id:
+            item = self.repo.session.get(PracticeChecklistItem, int(item_id))
+            if item is None:
+                continue
+            if item.is_done:
+                continue  
+            item.is_done = True
+            item.done_at = dt.datetime.now(dt.timezone.utc)
+            self.repo.session.add(item)
+            self.repo.session.commit()
 
-        return "ok"
+        return {"status": "ok", "updated_ids": id}
 
 
 
