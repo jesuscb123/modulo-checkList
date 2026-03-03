@@ -1,1 +1,1 @@
-from .asset_service import AssetService, LoanService
+from .lending import LocationService, AssetService, AssetLoanService  # noqa: F401

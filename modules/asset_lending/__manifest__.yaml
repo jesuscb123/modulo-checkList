@@ -1,13 +1,13 @@
-name: Gestión de Préstamos
+name: Asset Lending
 technical_name: asset_lending
 version: 0.1
 depends:
-  - core
   - ui
 data:
-  - views/views.yml
-  - views/menu.yml  
-models:
-  - modules.asset_lending.models.location.AssetLocation
-  - modules.asset_lending.models.asset.Asset
-  - modules.asset_lending.models.loan.AssetLoan
+  - data/groups.yml       # 1º Siempre los grupos (los ACL dependen de ellos)
+  - data/acl_rules.yml    # 2º Reglas de seguridad
+  - data/ui_modules.yml   # 3º Registro del módulo en la UI
+  - views/views.yml       # 4º Vistas (formularios y listas)
+  - views/menu.yml        # 5º Menús (dependen de las vistas y acciones)
+migrations: {}
+post_init_hook: null
