@@ -1,19 +1,62 @@
-asset_lending.asset:
-  list:
-    columns:
-      - { field: asset_code, width: 120 }
-      - { field: name, label: "Recurso" }
-      - { field: status, widget: chip }
-      - { field: location_id, label: "Ubicación" }
+# --- RECURSOS (ASSETS) ---
+- model: ui.view
+  ext_id: asset_lending_view_asset_list
+  fields:
+    name: "asset_lending.asset - Lista"
+    title: { $fallback: "Recursos - Lista" }
+    model_key: asset_lending.asset
+    type_id.ext_id: ui.ui_view_type_list
+    definition:
+      columns:
+        - { field: id, label: ID, width: 70 }
+        - { field: name, label: Recurso, sortable: true }
+        - { field: asset_code, label: Código }
+        - { field: status, label: Estado, chip: true }
+      actions:
+        - { name: new, type: create, icon: mdi-plus, label: "Nuevo" }
+        - { name: edit, type: update, icon: mdi-pencil, label: "Editar" }
 
-asset_lending.loan:
-  list:
-    columns:
-      - asset_id
-      - borrower_user_id
-      - status: { widget: chip }
-    row_actions:
-      - label: "Devolver"
-        service_method: "return_asset"
-        icon: "mdi-keyboard-return"
-        visible_formula: "record.status == 'open'"
+- model: ui.view
+  ext_id: asset_lending_view_asset_form
+  fields:
+    name: "asset_lending.asset - Formulario"
+    title: { $fallback: "Recurso - Formulario" }
+    model_key: asset_lending.asset
+    type_id.ext_id: ui.ui_view_type_form
+    definition:
+      groups:
+        - label: Básico
+          fields: [name, asset_code, status]
+        - label: Detalles
+          fields: [location_id, responsible_user_id, notes]
+
+# --- PRÉSTAMOS (LOANS) ---
+- model: ui.view
+  ext_id: asset_lending_view_loan_list
+  fields:
+    name: "asset_lending.loan - Lista"
+    title: { $fallback: "Préstamos - Lista" }
+    model_key: asset_lending.loan
+    type_id.ext_id: ui.ui_view_type_list
+    definition:
+      columns:
+        - { field: id, label: ID, width: 70 }
+        - { field: asset_id, label: Recurso }
+        - { field: borrower_user_id, label: Prestatario }
+        - { field: status, label: Estado, chip: true }
+      actions:
+        - { name: new, type: create, icon: mdi-plus, label: "Nuevo" }
+
+- model: ui.view
+  ext_id: asset_lending_view_loan_form
+  fields:
+    name: "asset_lending.loan - Formulario"
+    title: { $fallback: "Préstamo - Formulario" }
+    model_key: asset_lending.loan
+    type_id.ext_id: ui.ui_view_type_form
+    definition:
+      groups:
+        - label: Detalles
+          fields: [asset_id, borrower_user_id, status]
+        - label: Fechas
+          fields: [checkout_at, due_at, returned_at]

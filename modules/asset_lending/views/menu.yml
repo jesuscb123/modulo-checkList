@@ -1,14 +1,64 @@
-- name: asset_lending_root
-  label: "Assets"
-  icon: "inventory"
-  priority: 1
+# 1. Menú Raíz
+- model: ui.menuitem
+  ext_id: asset_lending_menu_root
+  fields:
+    title: { $fallback: "Gestión de Activos" }
+    icon: mdi-inventory
+    color_primary: "#2F5A77"
+    color_secondary: "#2F5A7766"
 
-- name: asset_lending_assets
-  parent: asset_lending_root
-  model: asset_lending.asset
-  label: "Recursos"
+# 2. Acción Recursos (Ya existen las vistas arriba, así que las encontrará)
+- model: ui.action
+  ext_id: asset_lending_action_assets
+  fields:
+    name: "Assets - Recursos"
+    title: { $fallback: "Recursos" }
+    route: asset-lending/assets
+    model_key: asset_lending.asset
+    model_path: "asset_lending/asset"
+    menu: true
+    default_multi_read_view_id.ext_id: asset_lending_view_asset_list
+    default_single_edit_view_id.ext_id: asset_lending_view_asset_form
+    views.ext_id:
+      - asset_lending_view_asset_list
+      - asset_lending_view_asset_form
+    context:
+      allowed_group_ext_ids:
+        - core_group_superadmin
 
-- name: asset_lending_loans
-  parent: asset_lending_root
-  model: asset_lending.loan
-  label: "Préstamos"
+# 3. Ítem Recursos
+- model: ui.menuitem
+  ext_id: asset_lending_menu_assets
+  fields:
+    title: { $fallback: "Recursos" }
+    icon: mdi-laptop
+    parent_id.ext_id: asset_lending_menu_root
+    action_id.ext_id: asset_lending_action_assets
+
+# 4. Acción Préstamos
+- model: ui.action
+  ext_id: asset_lending_action_loans
+  fields:
+    name: "Assets - Préstamos"
+    title: { $fallback: "Préstamos" }
+    route: asset-lending/loans
+    model_key: asset_lending.loan
+    model_path: "asset_lending/loan"
+    menu: true
+    default_multi_read_view_id.ext_id: asset_lending_view_loan_list
+    default_single_edit_view_id.ext_id: asset_lending_view_loan_form
+    views.ext_id:
+      - asset_lending_view_loan_list
+      - asset_lending_view_loan_form
+    context:
+      allowed_group_ext_ids:
+        - core_group_superadmin
+
+# 5. Ítem Préstamos
+- model: ui.menuitem
+  ext_id: asset_lending_menu_loans
+  fields:
+    title: { $fallback: "Préstamos" }
+    icon: mdi-hand-back-left
+    parent_id.ext_id: asset_lending_menu_root
+    action_id.ext_id: asset_lending_action_loans

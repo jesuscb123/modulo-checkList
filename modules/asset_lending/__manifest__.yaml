@@ -3,13 +3,11 @@ technical_name: asset_lending
 version: 0.1
 depends:
   - core
+  - ui
 data:
-  - security/access_control.yml
   - views/views.yml
-  - views/menu.yml
+  - views/menu.yml  
 models:
   - modules.asset_lending.models.location.AssetLocation
   - modules.asset_lending.models.asset.Asset
   - modules.asset_lending.models.loan.AssetLoan
-migrations: {}
-post_init_hook: null
