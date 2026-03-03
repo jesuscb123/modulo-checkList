@@ -1,0 +1,13 @@
+practice_checklist:
+  menu:
+    root: "Práctica"
+    checklists: "Checklists"
+    items: "Ítems"
+    settings: "Configuración"
+  actions:
+    mark_done: "Marcar como hecho"
+    mark_pending: "Marcar como pendiente"
+    save_settings: "Guardar Configuración"
+  settings:
+    title: "Configuración del Módulo"
+    policy_group: "Política de Cierre Automático"

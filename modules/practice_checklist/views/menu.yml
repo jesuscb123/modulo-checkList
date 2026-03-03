@@ -63,3 +63,32 @@
     icon: mdi-format-list-bulleted
     parent_id.ext_id: practice_checklist_menu_root
     action_id.ext_id: practice_checklist_action_items
+
+
+- model: ui.action
+  ext_id: practice_checklist_action_settings
+  fields:
+    name: "Practice - Settings"
+    title:
+      $fallback: "Configuración"
+    route: practice/settings
+    model_key: practice_checklist.setting
+    model_path: "practice_checklist/setting"
+    menu: true
+    context:
+      allowed_group_ext_ids:
+        - practice_checklist_group_manager
+        - core_group_superadmin
+    default_single_edit_view_id.ext_id: practice_checklist_view_setting_form
+    views.ext_id:
+      - practice_checklist_view_setting_form
+
+- model: ui.menuitem
+  ext_id: practice_checklist_menu_settings
+  fields:
+    title: 
+      $t: "practice_checklist.mnu.settings"
+      $fallback: "Configuración"
+    icon: mdi-cog-outline
+    parent_id.ext_id: practice_checklist_menu_root
+    action_id.ext_id: practice_checklist_action_settings

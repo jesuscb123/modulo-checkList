@@ -1,1 +1,1 @@
-from .checklist import PracticeChecklist, PracticeChecklistItem  # noqa: F401
+from .checklist import PracticeChecklist, PracticeChecklistItem, PracticeChecklistSetting

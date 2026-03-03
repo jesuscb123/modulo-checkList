@@ -95,7 +95,9 @@
       row_actions:
         - key: mark_done
           type: service
-          label: "Marcar hecho"
+          label: 
+            $t: "practice_checklist.actions.mark_done"
+            $fallback: "Marcar hecho"
           icon: mdi-check
           method: set_done
           model_key: practice_checklist.checklist_item
@@ -157,3 +159,19 @@
           icon: mdi-check-decagram
           method: set_done
           groups: [practice_checklist_group_manager, core_group_superadmin]
+
+
+- model: ui.view
+  ext_id: practice_checklist_view_setting_form
+  fields:
+    name: "practice_checklist.setting - Formulario"
+    title:
+      $fallback: "Configuración del Módulo"
+    model_key: practice_checklist.setting
+    type_id.ext_id: ui.ui_view_type_form
+    definition:
+      groups:
+        - label: Política de Cierre Automático
+          fields: 
+            - auto_close
+            - days_to_close 

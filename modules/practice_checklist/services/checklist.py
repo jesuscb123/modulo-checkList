@@ -95,3 +95,19 @@ class PracticeChecklistItemService(BaseService):
 
 
 
+class PracticeChecklistSettingService(BaseService):
+    from ..models import PracticeChecklistSetting
+
+    @exposed_action("read", groups=["practice_checklist_group_manager", "core_group_superadmin"])
+    def get_settings(self) -> dict:
+
+        setting = self.repo.session.get(self.PracticeChecklistSetting, 1)
+        
+        if not setting:
+            setting = self.PracticeChecklistSetting(id=1, auto_close=False, days_to_close=7)
+            self.repo.session.add(setting)
+            self.repo.session.commit()
+            self.repo.session.refresh(setting)
+            
+        from app.core.serializer import serialize
+        return serialize(setting)

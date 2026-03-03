@@ -1,0 +1,13 @@
+practice_checklist:
+  menu:
+    root: "Practice"
+    checklists: "Checklists"
+    items: "Items"
+    settings: "Settings"
+  actions:
+    mark_done: "Mark as done"
+    mark_pending: "Mark as pending"
+    save_settings: "Save Settings"
+  settings:
+    title: "Module Settings"
+    policy_group: "Auto-Close Policy"

@@ -155,3 +155,37 @@ class PracticeChecklistItem(Base):
         editable=False,
         info={"label": {"es": "Hecho en", "en": "Done at"}},
     )
+
+
+class PracticeChecklistSetting(Base):
+    __tablename__ = "practice_checklist_setting"
+    __abstract__ = False
+    __model__ = "setting"
+    __service__ = "modules.practice_checklist.services.checklist.PracticeChecklistSettingService"
+
+    __selector_config__ = {
+        "label_field": "id",
+        "columns": [
+            {"field": "id", "label": "ID"},
+            {"field": "auto_close", "label": "Cierre Auto"},
+            {"field": "days_to_close", "label": "Días"},
+        ],
+    }
+
+    auto_close = field(
+        Boolean,
+        required=True,
+        public=True,
+        editable=True,
+        default=False,
+        info={"label": {"es": "Cierre Automático", "en": "Auto Close"}},
+    )
+    
+    days_to_close = field(
+        Integer,
+        required=True,
+        public=True,
+        editable=True,
+        default=7,
+        info={"label": {"es": "Días para el cierre", "en": "Days to close"}},
+    )
