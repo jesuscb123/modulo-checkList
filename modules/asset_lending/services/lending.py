@@ -35,19 +35,32 @@ class AssetService(BaseService):
 class AssetLoanService(BaseService):
     from ..models.lending import Loan
 
-    def create(self, obj):  
-        
-        payload = dict(obj) if not isinstance(obj, dict) else obj.copy()
+    def create(self, obj): 
 
+        if not isinstance(obj, dict):
+            return super().create(obj)
+            
+        payload = dict(obj)
         asset_id = payload.get("asset_id")
+        
         if not asset_id:
             raise HTTPException(400, "Se requiere especificar un recurso (asset_id)")
+
+        due_at = payload.get("due_at")
+        if due_at and isinstance(due_at, str):
+            try:
+    
+                if "/" in due_at:
+                    parsed_date = dt.datetime.strptime(due_at.split()[0], "%d/%m/%Y")
+                    payload["due_at"] = parsed_date.replace(tzinfo=dt.timezone.utc)
+            except ValueError:
+                pass 
 
         asset = self.repo.session.get(Asset, int(asset_id))
         if not asset:
             raise HTTPException(404, "Recurso no encontrado")
         if asset.status != "available":
-            raise HTTPException(400, f"El recurso '{asset.name}' no está disponible (Estado: {asset.status})")
+            raise HTTPException(400, f"El recurso no está disponible (Estado: {asset.status})")
 
         asset.status = "loaned"
         self.repo.session.add(asset)
