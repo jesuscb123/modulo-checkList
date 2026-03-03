@@ -1,7 +1,7 @@
 - model: ui.menuitem
   ext_id: practice_checklist_menu_root
   fields:
-    title: "Practice"
+    title: { $t: "practice_checklist.menu.root", $fallback: "Practice" }
     icon: mdi-format-list-checks
     color_primary: "#2F5A77"
     color_secondary: "#2F5A7766"
@@ -11,6 +11,7 @@
   fields:
     name: "Practice - Checklists"
     title:
+      $t: "practice_checklist.menu.checklists"
       $fallback: "Checklists"
     route: practice/checklists
     model_key: practice_checklist.checklist
@@ -30,7 +31,9 @@
 - model: ui.menuitem
   ext_id: practice_checklist_menu_checklists
   fields:
-    title: "Checklists"
+    title: 
+      $t: "practice_checklist.menu.checklists"
+      $fallback: "Checklists"
     icon: mdi-clipboard-text-outline
     parent_id.ext_id: practice_checklist_menu_root
     action_id.ext_id: practice_checklist_action_checklists
@@ -40,7 +43,8 @@
   fields:
     name: "Practice - Items"
     title:
-      $fallback: "Ítems"
+      $t: "practice_checklist.menu.items"
+      $fallback: "Items"
     route: practice/checklist-items
     model_key: practice_checklist.checklist_item
     model_path: "practice_checklist/checklist_item"

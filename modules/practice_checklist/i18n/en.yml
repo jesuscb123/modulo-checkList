@@ -1,13 +1,40 @@
+common:
+  answers:
+    yes: "Yes"
+    no: "No"
+
 practice_checklist:
   menu:
-    root: "Práctica"
+    root: "Practice"
     checklists: "Checklists"
-    items: "Ítems"
-    settings: "Configuración"
+    items: "Items"
+    settings: "Settings"
   actions:
-    mark_done: "Marcar como hecho"
-    mark_pending: "Marcar como pendiente"
-    save_settings: "Guardar Configuración"
-  settings:
-    title: "Configuración del Módulo"
-    policy_group: "Política de Cierre Automático"
+    mark_done: "Mark as done"
+    mark_pending: "Mark as pending"
+    save_settings: "Save"
+
+  checklist:
+    $name: "Checklist"
+    $plural: "Checklists"
+    name: "Name"
+    status: "Status"
+    is_public: "Public"
+    owner_id: "Owner"
+    closed_at: "Closed at"
+    description: "Description"
+      
+  checklist_item:
+    $name: "Item"
+    $plural: "Items"
+    title: "Task"
+    is_done: "Completed"
+    done_at: "Completed at"
+    checklist_id: "Belongs to"
+    assigned_user_id: "Assigned to"
+    note: "Notes"
+
+  setting:
+    $name: "Settings"
+    auto_close: "Auto Close"
+    days_to_close: "Days to close"
