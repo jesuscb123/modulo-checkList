@@ -202,7 +202,7 @@ feedback_moderation/
      - La transición `publish` cambia los booleanos correctamente.
      - La transición `reject` mantiene la sugerencia privada.
      - El sistema lanza un error 400 (`HTTPException`) si se intenta hacer un `merge` de un ID consigo mismo.
-       https://github.com/jesuscb123/modulos-libnamic-practice/blob/5ea31bc475a7fd8ac44cde8fa2f318628c73412d/modules/feedback_moderation/tests/test_moderation_states.py#L1-L82
+       https://github.com/jesuscb123/modulos-libnamic-practice/blob/d828ca80df0c6e5ce0396eed81cd20b80058bbb3/modules/feedback_moderation/tests/test_moderation_states.py#L1-L78
 
 ---
 
