@@ -1,12 +1,12 @@
 # 📦 Proyecto Licium: Módulos Personalizados
 
-Este proyecto contiene un conjunto de módulos desarrollados para el framework **Licium**. Actualmente cuenta con dos módulos principales diseñados para extender las capacidades del sistema base: **Gestión de Préstamos (`asset_lending`)** y **Checklists Prácticos (`practice_checklist`)**.
+Este proyecto contiene un conjunto de módulos desarrollados para el framework **Licium**. Actualmente, el repositorio aloja múltiples módulos diseñados para extender de manera natural las amplias capacidades del sistema base: **Checklists Prácticos (`practice_checklist`)**, **Gestión de Préstamos de Activos (`asset_lending`)**, y un tercer módulo en actual etapa de concepción destinado a la **Moderación de Feedback (`feedback_moderation`)**.
 
 ---
 
 ## 🏗 Arquitectura General del Proyecto
 
-El proyecto está diseñado bajo una arquitectura modular en donde el **Backend** expone una API REST (FastAPI) y se conecta a una base de datos **PostgreSQL**, mientras que el **Frontend** (Nuxt.js) consume los puntos de entrada. Los módulos extienden el núcleo de la aplicación inyectándose dinámicamente.
+El proyecto está diseñado bajo una robusta arquitectura modular. El **Backend**, apoyado en FastAPI, expone una API REST moderna y se apoya en una base de datos **PostgreSQL** para la persistencia. Por otro lado, un **Frontend** reactivo y desacoplado, construido sobre Nuxt.js, consume estos puntos de entrada. Todos los módulos que se detallan a continuación extienden el núcleo (core) de la aplicación inyectándose de manera totalmente dinámica en tiempo de ejecución.
 
 ```mermaid
 graph TD
@@ -14,8 +14,9 @@ graph TD
     Frontend -->|HTTP / API REST| API(Backend API - Licium Base)
     
     subgraph Módulos Dinámicos
-    API <--> AL[Gestión de Préstamos<br/>asset_lending]
     API <--> PC[Checklists<br/>practice_checklist]
+    API <--> AL[Gestión de Préstamos<br/>asset_lending]
+    API <--> FM[Moderación de Feedback<br/>feedback_moderation]
     end
 
     API --> DB[(Base de Datos PostgreSQL)]
@@ -23,91 +24,105 @@ graph TD
 
 ---
 
-## 📂 Estructura de Carpetas del Repositorio
+## 📂 Estructura General del Repositorio
 
-La estructura principal del proyecto contiene los archivos de configuración y la carpeta `modules` en la que se encuentran ambos módulos a desplegar:
+La estructura de carpetas a nivel raíz contiene la configuración local indispensable de los servicios, siendo la carpeta clave `modules/` donde radican los proyectos propios.
 
 ```text
 modulo-checkList/
-├── docker-compose.backend-dev.yml  # Configuración de los servicios en Docker
-├── filestore/                      # Almacenamiento local de archivos (ej. logs)
-└── modules/                        # ➔ Directorio raíz de los módulos
-    ├── asset_lending/              # Módulo de Préstamos
-    └── practice_checklist/         # Módulo de Checklists
+├── docker-compose.backend-dev.yml  # Configuración integral de los servicios en Docker
+├── filestore/                      # Almacenamiento local persistente de archivos generados y logs
+└── modules/                        # ➔ Directorio raíz de los submódulos de la aplicación
+    ├── practice_checklist/         # Proyecto 1: Módulo de Checklists (Principal)
+    ├── asset_lending/              # Proyecto 2: Módulo de Gestión de Activos y Préstamos
+    └── feedback_moderation/        # Proyecto 3: Módulo de Moderación de Feedback (En Proceso)
 ```
 
 ---
 
-## 🧩 Detalle de los Módulos
+## 🧩 Detalle de los Proyectos / Módulos
 
-### 1. Módulo: Gestión de Préstamos (`asset_lending`)
+### 📌 Nivel 1: Checklists de Práctica (`practice_checklist`)
 
-Este módulo está encargado de llevar el registro y control de activos (`Assets`), su ubicación en diferentes espacios físicos (`Locations`) y gestionar los préstamos (`Loans`) de los mismos a los distintos usuarios del sistema.
+Este módulo fue diseñado para gobernar un sistema completo y persistente en el que permite crear, administrar y visualizar **Checklists** completamente estructurados. Cada checklist actúa como un contenedor de múltiples **Tareas (Items)** granulares, lo cual es ideal para realizar auditorías, controles rutinarios (QA) o procesos de validación secuenciales. Además incorpora opciones para mejorar y automatizar el flujo de trabajo, como el cierre automático tras no tener actividad por determinados días.
 
-#### 📂 Estructura Interna del Módulo
-
-```text
-asset_lending/
-├── __init__.py
-├── __manifest__.yaml       # Metadatos, versión y dependencias (depende de 'core' y 'ui')
-├── models/                 # Modelos de Base de Datos (SQLAlchemy)
-│   ├── asset.py            # Modelo principal de Activo
-│   ├── loan.py             # Modelo del Préstamo (AssetLoan)
-│   └── location.py         # Ubicación física del activo
-├── security/               # Reglas y políticas de seguridad
-│   └── access_control.yml
-├── services/               # Lógica de Negocio
-│   └── asset_service.py
-└── views/                  # Vistas e interfaz del usuario base modelo
-    ├── menu.yml            # Entradas de menú del módulo
-    └── views.yml           # Declaración y estructura de la interfaz
-```
-
----
-
-### 2. Módulo: Checklists de Práctica (`practice_checklist`)
-
-Este módulo permite crear y gestionar **Checklists** estructurados. Un checklist agrupa múltiples **Tareas (Items)** comprobables (apto para QA, auditorías o procesos estructurados). Además, posee configuraciones particulares como la posibilidad de auto-cerrarse tras una cantidad determinada de días.
-
-#### 📂 Estructura Interna del Módulo
+#### 📂 Estructura Interna y Entidades
 
 ```text
 practice_checklist/
-├── __init__.py
-├── __manifest__.yaml       # Metadatos del módulo (depende de 'ui')
-├── data/                   # Datos iniciales y de configuración para el sistema
-│   ├── acl_rules.yml       # Reglas de las Listas de Control de Acceso
-│   ├── groups.yml          # Grupos de usuarios
-│   └── ui_modules.yml      # Declaración frontend
-├── i18n/                   # Internacionalización (Idiomas)
-│   ├── en.yml              # Textos en Inglés
-│   └── es.yml              # Textos en Español
-├── models/                 # Modelos de Base de Datos
-│   └── checklist.py        # Modelos: PracticeChecklist, PracticeChecklistItem, Setting
-├── services/               # Lógica de Negocio
-│   └── checklist.py        # Servicios ORM / Controlador
-└── views/                  # Vistas de la interfaz del usuario
-    ├── menu.yml
-    └── views.yml
+├── __manifest__.yaml       # Define las dependencias del módulo (depende fuertemente de 'ui'), versión y los ficheros de carga en orden
+├── data/                   # Archivos de aprovisionamiento de configuración base
+│   ├── acl_rules.yml       # Reglas de las Listas de Control de Acceso (ACLs) y directrices de seguridad
+│   ├── groups.yml          # Estructura e inserción por defecto de los Grupos de usuarios
+│   └── ui_modules.yml      # Manifiesto que instruye al frontend cómo incluir este ecosistema en la interfaz
+├── i18n/                   # Traducciones e internacionalización (es.yml, en.yml) para multilingüismo
+├── models/
+│   └── checklist.py        # 🗄️ Definición ORM (SQLAlchemy) de los Modelos de Datos.
+│                           # Relacionan bases y configuración avanzada bajo una estructura relacional pura.
+├── services/
+│   └── checklist.py        # ⚙️ Controladores con lógica de negocio o validación transaccional previo al ingreso en BD
+└── views/                  # UI del backend para inyectarse al core
+    ├── menu.yml            # Árbol de navegación y accesos menú a inyectarse en el Front-End
+    └── views.yml           # Declaración y estructura de la organización, de listas y formularios visibles
 ```
+
+#### 🗄️ Modelos Principales
+*   **`PracticeChecklist`**: Entidad maestra del checklist. Almacena campos críticos como `name` (Nombre del checklist), `status` (Borrador, Abierto, Cerrado), `is_public` (visibilidad global) y `owner_id` (Relación M:1 hacia el usuario propietario del checklist).
+*   **`PracticeChecklistItem`**: Múltiples actividades dentro del Checklist maestro. Mantiene una clave foránea `checklist_id` y además permite asignar a usuarios específicos (`assigned_user_id`) mediante campos vitales como `title`, notas opcionales (`note`), y estados transaccionales (`is_done`, `done_at`).
+*   **`PracticeChecklistSetting`**: Modelo persistente de configuración para dictar reglas automáticas, como booleanos `auto_close` ligados con número de días configurables (`days_to_close`).
 
 ---
 
-## 🚀 Guía de Despliegue en Desarrollo (Docker Compose)
+### 📌 Nivel 2: Gestión de Préstamos (`asset_lending`)
 
-El proyecto incluye un entorno pre-configurado usando **Docker Compose** en el archivo `docker-compose.backend-dev.yml`. Este entorno levanta toda la infraestructura necesaria para desarrollar y correr el sistema.
+Supervisión, administración de inventarios robustos, y ciclo de vida de préstamos son el pilar de este módulo. Permite censar los distintos activos (`Assets`), establecer y gestionar los espacios físicos definidos como almacenes (`Locations`) para dichos activos y, sobre todo, gobernar centralmente las asignaciones, devoluciones y mora (`Loans`) asociados a cada respectivo usuario.
 
-### Requisitos Previos
-*Tener instalado **Docker** y **Docker Compose**.*
+#### 📂 Estructura Interna y Entidades
 
-### Puesta en Marcha
+```text
+asset_lending/
+├── __manifest__.yaml       # Identificador base del recurso. Indica versión, nombre técnico y orden preciso de inyecciones (grupos, acls, UI, vistas y menús).
+├── models/
+│   ├── asset.py            # (Archivos unificados internamente en lending.py)
+│   ├── lending.py          # 🗄️ Entidades unificadas relacionadas con toda la gestión: Location, Asset y Loan
+│   └── location.py         
+├── security/               # Reglas y políticas de seguridad (Access Controls Lists directas)
+│   └── access_control.yml
+├── services/               # ⚙️ Scripts de lógica interna, handlers y validadores correspondientes a los servicios
+│   └── asset_service.py    #         de Locations, Assets, AssetLoans.
+└── views/
+    ├── menu.yml            # Rutas de entrada a la interfaz (Menús laterales)
+    └── views.yml           # Listados, Action windows, y definiciones de plantillas y layouts.
+```
 
-1. **Inicie los servicios** corriendo el siguiente comando desde el directorio `modulo-checkList`:
+#### 🗄️ Modelos Principales
+*   **`Location`**: Modela lugares de almacenamiento o depósito físico en el sistema. Almacena su nombre, código único (`code`) y si se encuentra activo o en desuso.
+*   **`Asset`**: Base de recursos físicos a ser prestados, definidos por `name`, y clasificados inequívocamente con `asset_code`. Disponen de un control de estado en tiempo real (Disponible, En Préstamo, Mantenimiento) y lógicamente vinculados a ubicaciones `location_id`.
+*   **`Loan`**: Archiva todo rastro documental del préstamo realizado entre un usuario y un activo `asset_id`. Comprende variables obligatorias de seguimiento de tiempo como cuándo fue prestado (`checkout_at`), estimación máxima exigible de devolución (`due_at`) y cierre final (`returned_at`), junto con variables semánticas de estado (`status` abierto, devuelto, o atrasado). Permite notas anexas en salida y retorno.
+
+---
+
+### 📌 Proyecto 3: Moderación de Feedback (`feedback_moderation`) - En Construcción 🏗️
+
+Nuestra ruta evolutiva abarca un tercer módulo clave que, al día de hoy, se encuentra en plena fase de **diseño y construcción inicial**.
+
+---
+
+## 🚀 Guía Rápida de Despliegue en Entornos de Desarrollo Local (Docker Compose)
+
+El proyecto incluye de manera estandarizada un entorno pre-configurado garantizado y versionado por la infraestructura mediante el empleo de **Docker Compose** en el archivo `docker-compose.backend-dev.yml`. Este utilitario orquesta y levanta la red y todos los contenedores indispensables para correr y aportar modificaciones al sistema directamente con herramientas locales.
+
+### 🛑 Requisitos Previos Necesarios
+*Tener instalado **Docker** y el plugin **Docker Compose (v2+)**.*
+
+### ▶️ Puesta en Marcha
+
+1. **Inicie los servicios** corriendo el siguiente comando desde el directorio central de `modulo-checkList`:
    ```bash
    docker-compose -f docker-compose.backend-dev.yml up -d
    ```
-2. **Servicios que se levantarán**:
-   * `postgres` (Base de datos): Puerto `5432`.
-   * `backend` (FastAPI / Licium Base): Puerto `8000`. Expondrá el API y cargará los módulos definidos dinámicamente a través del montaje de volúmenes en `/opt/licium/modules`.
-   * `frontend` (Nuxt.js UI): Puerto `3000`. Interfaz moderna conectada al backend.
-3. Los módulos se cargan en caliente gracias al motor Uvicorn del backend, monitoreando cambios en el directorio local de los módulos.
+2. **Servicios y Entornos expuestos globalmente**:
+   * `postgres` (Base de datos relacional): Sirviendo nativamente mediante el puerto local de desarrollo `5432`.
+   * `backend` (FastAPI / Motor de Licium Base): Resolviendo en el puerto `8000`. Expone el servidor web API y el backend administrativo, inyectando y montando en tiempo vivo los módulos en la ruta `/opt/licium/modules`.
+   * `frontend` (Nuxt.js UI): Activo en el puerto `3000`. Es la interfaz moderna final interactiva conectada por peticiones asincrónicas a la API del backend.
+3. 🔄 *Hot Reloading*: Los módulos inyectados se re-evalúan y compilan en caliente de manera autónoma en tiempo real gracias a Uvicorn monitorizando sus orígenes y librerías externas.
