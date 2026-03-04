@@ -44,7 +44,7 @@
         - { field: asset_code, label: Código, width: 120 }
         - { field: name, label: Recurso, sortable: true }
         - { field: location_id, label: Ubicación }
-        - { field: status, label: Estado, chip: true } # <-- Requisito cumplido
+        - { field: status, label: Estado, chip: true } 
         - { field: responsible_user_id, label: Responsable }
       actions:
         - { name: new, type: create, icon: mdi-plus, label: "Nuevo" }
@@ -95,14 +95,13 @@
         - { field: id, label: ID, width: 70 }
         - { field: asset_id, label: Recurso }
         - { field: borrower_user_id, label: Prestatario }
-        - { field: status, label: Estado, chip: true } # <-- Requisito cumplido
+        - { field: status, label: Estado, chip: true } 
         - { field: checkout_at, label: Salida }
         - { field: due_at, label: Devolución Prevista }
       actions:
         - { name: new, type: create, icon: mdi-plus, label: "Nuevo Préstamo" }
         - { name: edit, type: update, icon: mdi-pencil, label: "Editar" }
       row_actions:
-        # <-- Requisito cumplido: row_action de tipo service para devolver
         - key: return_asset
           type: service
           label: "Devolver Recurso"
