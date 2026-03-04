@@ -120,16 +120,18 @@ asset_lending/
    * **Dónde está**: En la carpeta `views/` (`views.yml` y `menu.yml`).
    * **Cómo se cumple**: 
      - En `views.yml` definimos las tablas de datos (`ui_view_type_list`) y los formularios (`ui_view_type_form`) para `Location`, `Asset` y `Loan`.
-       https://github.com/jesuscb123/modulos-libnamic-practice/blob/85077e575324eded9ab45130eb8cdcd646631e26/modules/asset_lending/views/views.yml#L9-L19
      - Cumplimos la recomendación didáctica añadiendo `chip: true` al campo `status` para que salgan las píldoras de colores, y añadiendo el bloque `row_actions` para que el botón de "Devolver Recurso" aparezca directamente en cada fila de la tabla.
-       
+       https://github.com/jesuscb123/modulos-libnamic-practice/blob/5ea31bc475a7fd8ac44cde8fa2f318628c73412d/modules/asset_lending/views/views.yml#L1-L133
      - En `menu.yml` conectamos estas vistas al menú lateral del administrador.
+       https://github.com/jesuscb123/modulos-libnamic-practice/blob/5ea31bc475a7fd8ac44cde8fa2f318628c73412d/modules/asset_lending/views/menu.yml#L2-L93
 
 4. **ACL separada por lector/gestor**
    * **Dónde está**: En la carpeta `data/` (`groups.yml` y `acl_rules.yml`).
    * **Cómo se cumple**: 
      - En `groups.yml` creamos la jerarquía: `asset_lending_group_reader` y, heredando de él, el `asset_lending_group_manager`.
+       https://github.com/jesuscb123/modulos-libnamic-practice/blob/5ea31bc475a7fd8ac44cde8fa2f318628c73412d/modules/asset_lending/data/groups.yml#L1-L11
      - En `acl_rules.yml` asignamos los permisos reales sobre el comodín `asset_lending.*`: al `reader` solo le dimos `perm_read: true`, mientras que al `manager` le activamos todo (`perm_write`, `perm_create`, `perm_delete`).
+       https://github.com/jesuscb123/modulos-libnamic-practice/blob/5ea31bc475a7fd8ac44cde8fa2f318628c73412d/modules/asset_lending/data/acl_rules.yml#L1-L16
 
 ---
 
@@ -161,7 +163,13 @@ feedback_moderation/
 
 1. **Flujo de moderación extremo a extremo**
    * **Dónde está**: En `models/feedback.py` y `services/feedback.py`.
+    `models/feedback.py`
+     https://github.com/jesuscb123/modulos-libnamic-practice/blob/5ea31bc475a7fd8ac44cde8fa2f318628c73412d/modules/feedback_moderation/models/feedback.py#L1-L74
+     `services/feedback.py`
+     https://github.com/jesuscb123/modulos-libnamic-practice/blob/5ea31bc475a7fd8ac44cde8fa2f318628c73412d/modules/feedback_moderation/services/feedback.py#L1-L101
    * **Cómo se cumple**: Diseñamos un ciclo de vida completo. Al nacer (sobrescribiendo `create`), la sugerencia se fuerza a `status="pending"` e `is_public=False`. Creamos funciones `@exposed_action` exclusivas para moderadores: `publish`, `reject`, `merge` y `reopen`. Estas funciones cambian los estados, actualizan la visibilidad, registran la nota del moderador (`moderation_note`) y guardan qué usuario tomó la decisión (`reviewed_by_id`).
+     
+     
 
 2. **ACL pública con domain**
    * **Dónde está**: En `data/acl_rules.yml` (dentro del módulo de feedback).
@@ -172,6 +180,7 @@ feedback_moderation/
        - { field: "is_public", operator: "=", value: true }
      ```
      Esto garantiza que el público general jamás pueda consultar por API un comentario rechazado o pendiente.
+     https://github.com/jesuscb123/modulos-libnamic-practice/blob/5ea31bc475a7fd8ac44cde8fa2f318628c73412d/modules/feedback_moderation/data/acl_rules.yml#L1-L31
 
 3. **Acciones de estado con formulario automático**
    * **Dónde está**: En `views/views.yml` (dentro de los `form_actions` de la sugerencia).
@@ -184,6 +193,7 @@ feedback_moderation/
          required: true
      ```
      Esto le indica al frontend que, al hacer clic, debe levantar automáticamente un formulario emergente pidiendo ese campo antes de enviar la petición al servicio Python.
+     https://github.com/jesuscb123/modulos-libnamic-practice/blob/5ea31bc475a7fd8ac44cde8fa2f318628c73412d/modules/feedback_moderation/views/views.yml#L1-L129
 
 4. **Pruebas unitarias de transición de estado**
    * **Dónde está**: En `tests/test_moderation_states.py`.
@@ -192,6 +202,7 @@ feedback_moderation/
      - La transición `publish` cambia los booleanos correctamente.
      - La transición `reject` mantiene la sugerencia privada.
      - El sistema lanza un error 400 (`HTTPException`) si se intenta hacer un `merge` de un ID consigo mismo.
+       https://github.com/jesuscb123/modulos-libnamic-practice/blob/5ea31bc475a7fd8ac44cde8fa2f318628c73412d/modules/feedback_moderation/tests/test_moderation_states.py#L1-L82
 
 ---
 
