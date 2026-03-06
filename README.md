@@ -206,6 +206,60 @@ feedback_moderation/
 
 ---
 
+### 📌 Nivel 4: Gestión de Eventos Comunitarios (`community_events`)
+
+Este módulo provee una plataforma integral para la organización y gestión de eventos públicos o privados, abarcando desde la planificación de sesiones hasta el control de asistencia. Está diseñado para centralizar la información de los eventos (`Event`), desglosar su cronograma en sesiones o bloques de charlas (`Session`), y gestionar todo el ciclo de vida de los asistentes mediante un sistema de pre-registro y check-in en puerta (`Registration`).
+
+#### 📂 Estructura Interna y Entidades
+
+```text
+community_events/
+├── __manifest__.yaml       # Define versión, nombre técnico estructurado y orquesta la carga idempotente de datos (depende de 'ui')
+├── data/                   # Archivos de aprovisionamiento de configuración base
+│   ├── acl_rules.yml       # Reglas de las Listas de Control de Acceso (Secure by Default)
+│   ├── groups.yml          # Estructura e inserción por defecto de Grupos de usuarios
+│   └── ui_modules.yml      # Manifiesto para inyectar este ecosistema en la interfaz del frontend
+├── models/
+│   └── events.py           # 🗄️ Definición ORM (SQLAlchemy) de los Modelos: Event, Session, Registration
+├── services/               
+│   └── events.py           # ⚙️ Controladores con lógica de negocio y validaciones transaccionales críticas (ej. control de cancelados)
+├── tests/                  
+│   └── test_events.py      # Batería de pruebas automatizadas aisladas para los servicios críticos
+└── views/                  # UI del backend para inyectarse al core
+    ├── menu.yml            # Árbol de navegación y accesos menú a inyectarse en el Front-End
+    └── views.yml           # Declaración y estructura de la organización, con "ext_id" coherentes
+```
+
+#### 🗄️ Modelos Principales
+*   **`Event`**: Entidad maestra que define la convocatoria. Almacena parámetros fundamentales como `title`, `slug`, `status` (Borrador, Publicado, Cerrado, Cancelado) y `is_public` (visibilidad guiada por el flujo de moderación o fechas `start_at` y `end_at`).
+*   **`Session`**: Representa segmentos específicos o conferencias dentro de un Evento maestro (`event_id`). Desglosa variables como el nombre del ponente (`speaker_name`), sala asignada (`room`), tiempos (`start_at`, `end_at`), y su respectiva capacidad limitada (`capacity`).
+*   **`Registration`**: Registro transaccional que documenta la participación del usuario en el Evento o Sesión. Maneja la pre-inscripción (`attendee_name`, `attendee_email`) dictaminada bajo estatus restrictivos (Pendiente, Confirmado, Lista de Espera, Cancelado) y captura momentos clave en tiempo real como la confirmación final de acceso en el lugar (`checkin_at`).
+
+#### ✅ Requisitos Cumplidos
+
+1. **Nombre técnico estable y versionado semántico**
+   * **Qué significa**: Un módulo "Community" (pensado para distribuirse) necesita un nombre único sin espacios y una versión que indique su madurez (ej. 1.0.0, 2.1.0), siguiendo el estándar de versionado semántico.
+   * **Dónde está**: En `modules/community_events/__manifest__.yaml`.
+   * **Cómo lo cumplimos**: Definimos explícitamente `technical_name: community_events` y `version: 1.0.0`. Esto asegura que el framework pueda registrar el módulo limpiamente y gestionar futuras actualizaciones sin romper el código de quien lo haya instalado.
+
+2. **Seeds idempotentes (ext_id coherentes)**
+   * **Qué significa**: "Idempotente" significa que da igual si instalas el módulo 1 vez o 100 veces; el resultado en la base de datos debe ser el mismo (sin duplicar datos).
+   * **Dónde está**: En todos nuestros archivos YAML (`data/groups.yml`, `data/acl_rules.yml`, `views/views.yml`, etc.).
+   * **Cómo lo cumplimos**: Asignamos a cada registro un identificador externo único y prefijado (ej. `ext_id: ce_view_event_list` o `ext_id: ce_acl_staff_all`). Cuando el framework lee el YAML, busca ese `ext_id`; si ya existe, lo actualiza, y si no existe, lo crea. Jamás duplica.
+
+3. **ACL segura por defecto (Secure by Default)**
+   * **Qué significa**: En ciberseguridad, todo debe estar prohibido de inicio. Solo abrimos las puertas estrictamente necesarias para que el sistema funcione.
+   * **Dónde está**: En `modules/community_events/data/acl_rules.yml`.
+   * **Cómo lo cumplimos**: 
+     - Al grupo público (`core_group_public`) le restringimos la lectura mediante un dominio estricto: solo pueden ver eventos donde `status = 'published'` y además `is_public = true`.
+     - Al staff (`community_events_group_staff`) le dimos privilegios totales (`perm_write`, `perm_delete`) sobre todas las tablas del módulo (`community_events.*`).
+
+4. **Tests mínimos de servicios críticos**
+   * **Dónde está**: En `modules/community_events/tests/test_events.py`.
+   * **Cómo lo cumplimos**: Usamos `pytest` junto con `MagicMock` para engañar a la base de datos (y que corran rapidísimo). Probamos el "camino feliz" (publicar un evento) y la regla de seguridad crítica: probamos que si intentamos hacer check-in a un usuario cancelado, el sistema lanza un error HTTP 400 y aborta la transacción.
+
+---
+
 ## 🚀 Guía Rápida de Despliegue en Entornos de Desarrollo Local (Docker Compose)
 
 El proyecto incluye de manera estandarizada un entorno pre-configurado garantizado y versionado por la infraestructura mediante el empleo de **Docker Compose** en el archivo `docker-compose.backend-dev.yml`. Este utilitario orquesta y levanta la red y todos los contenedores indispensables para correr y aportar modificaciones al sistema directamente con herramientas locales.
