@@ -31,8 +31,8 @@ class Event(Base):
     organizer_user_id = field(UUID, ForeignKey("core_user.id"), required=False, public=True, editable=True, info = {"label": "Organizado por"})
 
     # Relaciones estables para los tests
-    sessions = relationship("modules.community_events.models.events.Session", backref="event", cascade="all, delete-orphan")
-    registrations = relationship("modules.community_events.models.events.Registration", backref="event", cascade="all, delete-orphan")
+    sessions = relationship("modules.community_events.models.events.Session", cascade="all, delete-orphan")
+    registrations = relationship("modules.community_events.models.events.Registration", cascade="all, delete-orphan")
 
 
 class Session(Base):
